@@ -364,7 +364,7 @@ pub struct SmartlogArgs {
     pub revset: Option<Revset>,
 
     /// Print the smartlog in the opposite of the usual order, with the latest
-    /// commits first.
+    /// commits first. (DEPRECATED: should be configured with `branchless.smartlog.reverse`)
     #[clap(long)]
     pub reverse: bool,
 

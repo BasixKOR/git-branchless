@@ -19,7 +19,7 @@ use std::time::SystemTime;
 use git_branchless_invoke::CommandContext;
 use git_branchless_opts::{Revset, SmartlogArgs};
 use lib::core::config::{
-    Hint, get_hint_enabled, get_hint_string, get_smartlog_default_revset,
+    Hint, get_hint_enabled, get_hint_string, get_smartlog_default_revset, get_smartlog_reverse,
     print_hint_suppression_notice,
 };
 use lib::core::repo_ext::RepoExt;
@@ -746,6 +746,7 @@ mod render {
         /// The options to use when resolving the revset.
         pub resolve_revset_options: ResolveRevsetOptions,
 
+        /// Deprecated
         /// Reverse the ordering of items in the smartlog output, list the most
         /// recent commits first.
         pub reverse: bool,
@@ -823,6 +824,16 @@ pub fn smartlog(
         &commits,
         exact,
     )?;
+
+    let reverse = if reverse {
+        writeln!(
+            effects.get_error_stream(),
+            "WARNING: The `--reverse` flag is deprecated.\nPlease use the `branchless.smartlog.reverse` configuration option."
+        )?;
+        true
+    } else {
+        get_smartlog_reverse(&repo)?
+    };
 
     let mut lines = render_graph(
         &effects.reverse_order(reverse),
